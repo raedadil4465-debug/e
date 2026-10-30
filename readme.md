@@ -1,0 +1,1 @@
+A spooky football game with ghosts, you must defend the spooky creatures to get to your goal! press space to tackle wasd to move asnd shift to sprint.

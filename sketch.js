@@ -9,21 +9,26 @@ const MAX_FOULS = 2;
 const WAVE_LIMIT = 9;
 
 const TYPES = [
-  {name:'THE WINGER',tag:'Explosive cuts. Impossible angles.',
+  {name:'THE VAMPIRE',tag:'A blood-red blur with a taste for the goal.',
+   costume:'vampire',
    col:[255,190,62],num:11,pace:3.25,sprint:5.1,
    feint:65,feintRate:2.1,shootRange:210,evade:.42,fake:.22},
-  {name:'THE SPEEDSTER',tag:'One mistake. He is gone.',
+  {name:'THE WEREWOLF',tag:'One moonlit howl. Then he is gone.',
+   costume:'werewolf',
    col:[255,96,96],num:7,pace:4.1,sprint:6.3,
    feint:35,feintRate:1.6,shootRange:220,evade:.4,fake:.12},
-  {name:'THE TRICKSTER',tag:'Every tackle is a gamble.',
+  {name:'THE WITCH',tag:'Every tackle is cursed. Every feint a spell.',
+   costume:'witch',
    col:[188,124,255],num:10,pace:3.4,sprint:5.2,
    feint:90,feintRate:2.7,shootRange:220,evade:.72,fake:.75},
-  {name:'THE STRIKER',tag:'Give him space and he shoots.',
+  {name:'THE SKELETON',tag:'A bone-rattling shot from anywhere.',
+   costume:'skeleton',
    col:[92,228,255],num:9,pace:3.4,sprint:4.8,
    feint:40,feintRate:1.5,shootRange:360,evade:.35,fake:.35}
 ];
 const BOSS = {
-  name:'THE MAESTRO',tag:'He knows what you will do.',
+  name:'THE GRIM REAPER',tag:'He already knows how your story ends.',
+  costume:'reaper',
   col:[255,255,255],num:10,pace:4.2,sprint:6.2,
   feint:95,feintRate:2.5,shootRange:350,
   boss:true,evade:.85,fake:.85
@@ -79,6 +84,7 @@ function draw(){
   updateFx(dt);
 
   image(pitchLayer,0,0,W,H);
+  drawHauntings();
   push();
   if(shake>.3)translate(random(-shake,shake),random(-shake,shake));
   drawIndicators();
@@ -890,39 +896,50 @@ function addFloater(txt,x,y,col,size=16){
 function buildPitchLayer(){
   const g=createGraphics(W,H);
   g.pixelDensity(min(2,window.devicePixelRatio||1));
-  g.background(16,12,24);
+  g.background(13,8,22);
   g.noStroke();
   randomSeed(11);
 
   const crowd=[
-    [255,156,78],[135,90,220],[255,227,126],
-    [255,204,170],[95,190,140],[200,80,90]
+    [255,125,54],[174,92,235],[255,220,112],
+    [226,220,202],[135,220,122],[214,70,94]
   ];
-  for(let i=0;i<2600;i++){
+  for(let i=0;i<1900;i++){
     const x=random(W),y=random(H);
     const inside=x>FIELD.left-14&&x<FIELD.right+14&&
       y>FIELD.top-GOAL_D-12&&y<FIELD.bottom+14;
     if(inside||y<66)continue;
     const c=random(crowd);
-    g.fill(c[0],c[1],c[2],random(70,150));
+    g.fill(12,8,20,180);
+    g.ellipse(x,y+3,random(4,7),random(5,8));
+    g.fill(c[0],c[1],c[2],random(100,210));
     g.ellipse(x,y,random(3,5.5));
   }
 
-  g.fill(255,210,120,170);
+  // Blood moon and distant haunted-house silhouettes.
+  g.fill(255,92,54,34);
+  g.ellipse(W-150,110,142,142);
+  g.fill(255,210,120,190);
   g.ellipse(W-150,110,88,88);
-  g.fill(255,230,180,60);
+  g.fill(255,230,180,75);
   g.ellipse(W-150,110,120,120);
+  g.noStroke();g.fill(18,9,22,220);
+  g.rect(65,49,46,46);g.triangle(58,50,88,25,118,50);
+  g.rect(728,57,51,39);g.triangle(720,58,753,31,787,58);
+  g.fill(255,132,55,210);
+  g.rect(80,63,7,12);g.rect(95,63,7,12);
+  g.rect(742,67,8,12);g.rect(759,67,8,12);
 
-  g.fill(42,29,42);
+  g.fill(30,18,39);
   g.rect(FIELD.left-14,FIELD.top-GOAL_D-12,
     FIELD.right-FIELD.left+28,
     FIELD.bottom-FIELD.top+GOAL_D+26,10);
-  g.fill(87,46,42);
+  g.fill(70,34,41);
   g.rect(FIELD.left-8,FIELD.top-GOAL_D-6,
     FIELD.right-FIELD.left+16,
     FIELD.bottom-FIELD.top+GOAL_D+14,6);
 
-  g.fill(66,42,72);
+  g.fill(45,34,66);
   g.rect(FIELD.left,FIELD.top-GOAL_D,
     FIELD.right-FIELD.left,
     FIELD.bottom-FIELD.top+GOAL_D);
@@ -930,19 +947,19 @@ function buildPitchLayer(){
   const sh=(FIELD.bottom-FIELD.top)/12;
   for(let i=0;i<12;i++){
     if(i%2===0){
-      g.fill(255,191,118,18);
+      g.fill(167,112,211,15);
       g.rect(FIELD.left,FIELD.top+i*sh,
         FIELD.right-FIELD.left,sh);
     }
   }
   for(let i=0;i<1600;i++){
-    g.fill(random()<.5?255:180,random()<.5?120:220,
-      random()<.5?90:170,8);
+    g.fill(random()<.5?210:135,random()<.5?95:170,
+      random()<.5?82:205,10);
     g.rect(random(FIELD.left,FIELD.right),
       random(FIELD.top,FIELD.bottom),2,random(2,5));
   }
 
-  g.noFill();g.stroke(255,208,148,200);g.strokeWeight(2);
+  g.noFill();g.stroke(190,151,216,190);g.strokeWeight(2);
   g.rect(FIELD.left,FIELD.top,
     FIELD.right-FIELD.left,FIELD.bottom-FIELD.top);
   g.rect(250,FIELD.top,400,150);
@@ -951,25 +968,95 @@ function buildPitchLayer(){
   g.arc(450,FIELD.bottom,150,150,PI,TWO_PI);
   g.arc(FIELD.left,FIELD.top,26,26,0,HALF_PI);
   g.arc(FIELD.right,FIELD.top,26,26,HALF_PI,PI);
-  g.noStroke();g.fill(255,190,120,210);
+  g.noStroke();g.fill(255,140,66,230);
   g.ellipse(450,FIELD.top+108,6);
 
-  g.fill(255,165,90,90);
-  g.textAlign(CENTER,CENTER);
-  g.textSize(10);g.textStyle(BOLD);
-  g.text('L A S T   D E F E N D E R  /  H A L L O W E E N',
-    450,FIELD.bottom+8);
-
+  // Tiny gravestones, jack-o'-lanterns and webs frame the pitch.
+  for(let x=14;x<58;x+=22){
+    g.fill(54,48,66,240);
+    g.rect(x,210,13,22,3);g.arc(x+6.5,210,13,13,PI,TWO_PI);
+    g.stroke(255,155,90,160);g.strokeWeight(1);
+    g.line(x+6.5,216,x+6.5,225);g.line(x+3,220,x+10,220);
+    g.noStroke();
+  }
+  for(let x=846;x<890;x+=22){
+    g.fill(54,48,66,240);
+    g.rect(x,410,13,22,3);g.arc(x+6.5,410,13,13,PI,TWO_PI);
+    g.stroke(255,155,90,160);g.strokeWeight(1);
+    g.line(x+6.5,416,x+6.5,425);g.line(x+3,420,x+10,420);
+    g.noStroke();
+  }
+  for(const x of [25,875]){
+    g.fill(245,108,38,235);g.ellipse(x,568,22,19);
+    g.fill(30,12,22);g.triangle(x-7,564,x-3,570,x-9,570);
+    g.triangle(x+7,564,x+3,570,x+9,570);
+    g.triangle(x-2,573,x+2,573,x,577);
+    g.fill(115,190,72);g.rect(x-2,555,4,6);
+  }
+  g.stroke(210,186,225,145);g.strokeWeight(1);
+  for(const x of [8,892]){
+    g.line(x,66,x,112);g.line(x,66,x+28,66);
+    g.line(x,66,x+26,88);g.line(x,66,x+28,108);
+    g.line(x,66,x+14,82);g.line(x+28,66,x+14,82);
+    g.line(x+14,82,x,66);
+  }
   const ctx=g.drawingContext;
   const gr=ctx.createRadialGradient(450,H*.48,H*.28,
     450,H*.48,H*.95);
   gr.addColorStop(0,'rgba(20,12,24,0)');
-  gr.addColorStop(1,'rgba(20,12,24,0.72)');
+  gr.addColorStop(1,'rgba(13,7,23,0.72)');
   ctx.fillStyle=gr;ctx.fillRect(0,0,W,H);
   pitchLayer=g;
 }
 
 // ---------- WORLD DRAWING ----------
+function drawHauntings(){
+  const t=frameCount;
+  for(let i=0;i<7;i++){
+    const x=((t*(.8+i*.08)+i*143)%(W+80))-40;
+    const y=76+sin(t*.035+i*2)*10+(i%3)*7;
+    drawBat(x,y,.65+(i%3)*.12,180);
+  }
+  const wisps=[
+    [31,157,1,.65],[870,184,.9,.52],
+    [31,350,.82,.48],[870,315,1,.62],
+    [31,506,1,.56],[870,520,.82,.5]
+  ];
+  for(let i=0;i<wisps.length;i++){
+    const w=wisps[i];
+    drawGhost(w[0]+sin(t*.025+i)*4,
+      w[1]+sin(t*.04+i*2)*5,w[2],w[3]);
+  }
+}
+
+function drawBat(x,y,s,alpha){
+  push();translate(x,y);scale(s);
+  const flap=sin(frameCount*.32+x)*5;
+  noStroke();fill(18,10,26,alpha);
+  ellipse(0,0,9,13);
+  triangle(-2,0,-15,-7-flap,-12,6);
+  triangle(2,0,15,-7+flap,12,6);
+  triangle(-1,-3,-9,-12,-6,-1);
+  triangle(1,-3,9,-12,6,-1);
+  fill(255,118,55,alpha);
+  ellipse(-2,-2,1.5);ellipse(2,-2,1.5);
+  pop();
+}
+
+function drawGhost(x,y,s,alpha){
+  push();translate(x,y);scale(s);
+  const bob=sin(frameCount*.08+x)*2;
+  noStroke();fill(210,223,236,alpha*120);
+  ellipse(0,bob,24,28);
+  rect(-12,bob,24,22);
+  for(let i=0;i<4;i++)
+    ellipse(-9+i*6,bob+20+sin(frameCount*.12+i)*2,7,7);
+  fill(23,14,34,alpha*220);
+  ellipse(-4,bob-1,3,5);ellipse(4,bob-1,3,5);
+  arc(0,bob+6,5,4,0,PI);
+  pop();
+}
+
 function drawIndicators(){
   if(state!=='play')return;
   if(waveState==='live'||waveState==='intro'){
@@ -1035,6 +1122,12 @@ function drawPlayer(x,y,face,o){
   const sw=sin(o.run||0)*5;
   const spread=o.arms||0;
 
+  if(o.costume==='vampire'||o.costume==='reaper'){
+    fill(o.costume==='reaper'?[23,17,35]:[72,12,34]);
+    triangle(-16,-12,0,20,16,-12);
+    triangle(-12,-16,-19,-29,-6,-22);
+    triangle(12,-16,19,-29,6,-22);
+  }
   fill(...o.shorts);
   ellipse(-8,13+sw,9,18);
   ellipse(8,13-sw,9,18);
@@ -1050,12 +1143,67 @@ function drawPlayer(x,y,face,o){
 
   fill(...o.shirt);
   ellipse(0,0,35,39);
+  if(o.costume==='skeleton'){
+    stroke(235,231,205);strokeWeight(2);
+    line(-9,-7,9,-7);line(-11,-1,11,-1);
+    line(-9,5,9,5);line(-7,11,7,11);
+    noStroke();fill(235,231,205);
+    ellipse(-12,0,4);ellipse(12,0,4);
+  }else if(o.costume==='reaper'){
+    fill(205,194,174,220);
+    ellipse(0,-7,8,7);
+    stroke(205,194,174,220);strokeWeight(2);
+    line(-8,0,8,0);line(-7,5,7,5);
+    noStroke();
+  }else if(o.costume==='witch'){
+    fill(255,190,70,200);
+    ellipse(0,-1,5,5);
+    stroke(255,190,70,180);strokeWeight(1);
+    line(-10,6,10,6);noStroke();
+  }
   fill(255,255,255,60);
   rect(-2,-14,4,26,2);
   fill(...o.skin);
   ellipse(0,-21,19,19);
   fill(...o.hair);
   arc(0,-24,20,13,PI,TWO_PI);
+  if(o.costume==='vampire'){
+    fill(74,8,30);triangle(-10,-19,0,-11,10,-19);
+    fill(255,245,225);triangle(-4,-13,-2,-8,0,-13);
+    triangle(4,-13,2,-8,0,-13);
+  }else if(o.costume==='werewolf'){
+    fill(...o.hair);
+    triangle(-10,-28,-12,-40,-3,-29);
+    triangle(10,-28,12,-40,3,-29);
+    fill(238,213,167);ellipse(0,-17,13,8);
+    fill(30,18,24);ellipse(-4,-22,2.5);ellipse(4,-22,2.5);
+  }else if(o.costume==='witch'){
+    fill(24,16,39);triangle(-15,-27,0,-48,15,-27);
+    ellipse(0,-27,31,5);
+    fill(255,137,47);rect(-9,-29,18,3);
+    fill(255,221,126);ellipse(-4,-21,2.5);ellipse(4,-21,2.5);
+  }else if(o.costume==='skeleton'||o.costume==='reaper'){
+    fill(232,226,205);ellipse(0,-21,19,18);
+    fill(24,16,30);ellipse(-4,-22,4,5);ellipse(4,-22,4,5);
+    triangle(-2,-16,2,-16,0,-12);
+    stroke(24,16,30);strokeWeight(1);
+    line(-4,-13,-4,-10);line(0,-13,0,-10);line(4,-13,4,-10);
+    noStroke();
+    if(o.costume==='reaper'){
+      fill(28,19,42);arc(0,-25,24,24,PI,TWO_PI);
+      fill(255,120,54,220);ellipse(-4,-22,2);ellipse(4,-22,2);
+    }
+  }else if(o.costume==='pumpkin'){
+    fill(255,131,38);ellipse(0,-21,22,20);
+    fill(38,19,24);triangle(-8,-24,-3,-20,-9,-19);
+    triangle(8,-24,3,-20,9,-19);
+    triangle(-3,-15,3,-15,0,-11);
+    fill(104,179,60);rect(-2,-33,4,5);
+  }else if(o.costume==='zombie'){
+    fill(132,193,111);ellipse(0,-21,19,19);
+    fill(31,35,24);ellipse(-4,-22,3,5);ellipse(4,-22,3,4);
+    fill(92,30,39);rect(-3,-15,6,2);
+  }
 
   rotate(-(face+HALF_PI));
   fill(255,255,255,220);
@@ -1071,7 +1219,7 @@ function drawDefender(){
   drawPlayer(d.x,d.y,d.face+lean,{
     shirt:[255,145,78],shorts:[41,30,48],
     skin:[235,199,157],hair:[57,36,46],
-    num:5,run:d.run,
+    num:5,run:d.run,costume:'pumpkin',
     glow:recovery>0?[255,180,90]:
       tackleTimer>0?[255,180,120]:null
   });
@@ -1089,7 +1237,7 @@ function drawAttacker(p){
   drawPlayer(a.x,a.y+bob,celeb?HALF_PI:a.face,{
     shirt:c,shorts:[32,30,40],
     skin:[250,220,179],hair:[40,35,30],
-    num:a.type.num,run:a.run,
+    num:a.type.num,run:a.run,costume:a.type.costume,
     down:a.down>0,arms:celeb?1:0,
     glow:a.sprinting&&a.down<=0?[255,226,143]:null
   });
@@ -1107,7 +1255,7 @@ function drawKeeper(){
   drawPlayer(keeper.x,keeper.y,HALF_PI,{
     shirt:[150,88,255],shorts:[34,30,42],
     skin:[235,199,157],hair:[30,30,30],
-    num:1,run:frameCount*.05,
+    num:1,run:frameCount*.05,costume:'zombie',
     arms:keeper.diving>0?1:.15,scale:.95
   });
 }
@@ -1163,25 +1311,25 @@ function drawFloaters(){
 
 // ---------- HUD ----------
 function drawHud(){
-  noStroke();fill(20,12,24,240);
+  noStroke();  fill(17,9,25,245);
   rect(0,0,W,64);
-  fill(255,150,72,70);rect(0,62,W,2);
+  fill(255,126,56,130);rect(0,62,W,2);
 
   textAlign(LEFT,CENTER);textStyle(BOLD);
-  textSize(17);fill(255,211,150);
-  text('LAST DEFENDER',24,20);
-  textStyle(NORMAL);textSize(10);fill(218,176,128);
+  textSize(17);fill(255,164,92);
+  text('THE HAUNTED CUP',24,20);
+  textStyle(NORMAL);textSize(10);fill(199,166,206);
   text(state==='play'?'WAVE '+wave+'  ·  '+curType.name:
     'HALLOWEEN NIGHT',24,42);
 
   textAlign(CENTER,CENTER);textStyle(BOLD);
-  textSize(28);fill(255,224,140);
+  textSize(28);fill(255,194,103);
   text(score.toLocaleString(),450,25);
-  textStyle(NORMAL);textSize(10);fill(218,176,128);
+  textStyle(NORMAL);textSize(10);fill(199,166,206);
   text('BEST '+best,450,49);
 
   textAlign(RIGHT,CENTER);textSize(10);
-  fill(255,149,101);
+  fill(255,127,91);
   text('CONCEDED',W-24,14);
   for(let i=0;i<MAX_CONCEDED;i++){
     const cx=W-36-(MAX_CONCEDED-1-i)*24,cy=31;
@@ -1191,17 +1339,17 @@ function drawHud(){
       line(cx+6,cy-6,cx-6,cy+6);
       noStroke();
     }else{
-      fill(255,180,90);ellipse(cx,cy,14);
+      fill(255,146,64);ellipse(cx,cy,14);
     }
   }
 
   textAlign(CENTER,CENTER);textSize(10);
-  fill(255,218,140);textStyle(NORMAL);
+  fill(207,163,232);textStyle(NORMAL);
   text('FOULS',W-170,14);
   for(let i=0;i<MAX_FOULS;i++){
     const cx=W-188+i*18;
     if(i<fouls)fill(i===MAX_FOULS-1?
-      color(255,80,70):color(255,220,70));
+      color(255,80,70):color(255,153,67));
     else fill(255,255,255,40);
     rect(cx,24,11,15,2);
   }
@@ -1219,41 +1367,43 @@ function drawHud(){
     rect(0,64,W*(1-p),3);
   }
 
-  fill(34,19,29,200);rect(24,H-22,130,8,4);
+  fill(34,19,39,220);rect(24,H-22,130,8,4);
   fill(exhausted?color(255,110,90):
-    stamina>25?color(255,180,90):color(255,135,70));
+    stamina>25?color(255,155,66):color(255,105,78));
   rect(24,H-22,130*stamina/100,8,4);
   textAlign(LEFT,CENTER);textSize(9);
   fill(255,232,200);
   text(exhausted?'WINDED':'SPRINT',24,H-34);
 
   const cx=W-44,cy=H-40;
-  noFill();stroke(255,214,156,70);
+  noFill();stroke(201,157,222,100);
   strokeWeight(2);ellipse(cx,cy,26);
   const ready=1-constrain(tackleCooldown/65,0,1);
   stroke(ready>=1?color(255,190,90):
-    color(255,214,156,170));
+    color(201,157,222,210));
   strokeWeight(3);
   arc(cx,cy,26,26,-HALF_PI,
     -HALF_PI+TWO_PI*ready);
-  noStroke();fill(255,210,150,200);
+  noStroke();fill(255,176,104,220);
   textAlign(CENTER,CENTER);textSize(8);
   text('SPACE',cx,cy);
 
-  textSize(9);fill(255,219,175,90);
+  textSize(9);fill(216,184,222,130);
   text('P  PAUSE   ·   M  SOUND '+(muted?'OFF':'ON'),
     450,H-14);
 }
 
 // ---------- SCREENS ----------
 function panel(w,h){
-  noStroke();fill(3,15,14,200);
+  noStroke();fill(7,4,15,215);
   rect(0,64,W,H-64);
-  fill(8,30,26,248);
+  fill(24,12,32,250);
   rect(450-w/2,330-h/2,w,h,18);
-  noFill();stroke(115,255,177,60);
+  noFill();stroke(255,132,67,125);
   strokeWeight(2);
   rect(450-w/2,330-h/2,w,h,18);
+  stroke(190,112,232,55);strokeWeight(1);
+  rect(450-w/2+7,330-h/2+7,w-14,h-14,13);
   noStroke();
 }
 
@@ -1261,10 +1411,10 @@ function drawBanner(){
   const t=introTimer;
   const al=constrain(min(t,65-t)*12,0,255);
   const c=curType.col;
-  noStroke();fill(22,14,24,al*.6);
+  noStroke();fill(17,8,25,al*.82);
   rect(0,H/2-70,W,130);
   textAlign(CENTER,CENTER);textStyle(BOLD);
-  fill(255,180,90,al);textSize(13);
+  fill(255,145,78,al);textSize(13);
   text(curType.boss?'BOSS WAVE '+wave:'WAVE '+wave,
     450,H/2-44);
   fill(...c,al);textSize(40);
@@ -1279,12 +1429,12 @@ function drawBanner(){
 function drawStartScreen(){
   panel(560,500);
   textAlign(CENTER,CENTER);textStyle(BOLD);
-  fill(255,172,95);textSize(12);
-  text('HALLOWEEN SURVIVAL MODE',450,140);
-  fill(255,232,180);textSize(43);
-  text('LAST DEFENDER',450,180);
-  textStyle(NORMAL);fill(255,198,146);textSize(14);
-  text('Moonlit chaos. Two goals. No mercy.',450,220);
+  fill(255,145,74);textSize(12);
+  text('ONE NIGHT. WAVE AFTER WAVE OF NIGHTMARES.',450,140);
+  fill(255,225,182);textSize(42);
+  text('THE HAUNTED CUP',450,180);
+  textStyle(NORMAL);fill(208,170,224);textSize(14);
+  text('Vampires, witches & worse are coming for your goal.',450,220);
 
   fill(255,228,191);textSize(14);
   const lines=[
@@ -1292,18 +1442,17 @@ function drawStartScreen(){
     'SHIFT   sprint  (limited stamina)',
     'SPACE   lunge tackle',
     '',
-    'Orange ring = exposed ball. Time your tackle.',
-    'Attackers read your movement and dodge lunges.',
-    'Shots are fast. Wind-ups can be dummies.',
-    'Second attackers arrive from wave 2.',
-    'Miss a tackle and the night closes in.',
-    'Every fifth wave: THE MAESTRO.'
+    'Pumpkin armor vs vampires, werewolves, witches & skeletons.',
+    'Ghosts haunt the touchline. Bats circle overhead.',
+    'Beware a second monster from wave 2.',
+    'Miss a tackle and the graveyard grows.',
+    'Every fifth wave: THE GRIM REAPER.'
   ];
   lines.forEach((l,i)=>text(l,450,259+i*25));
 
-  fill(255,214,120);textSize(13);
+  fill(255,174,90);textSize(13);
   text('BEST  '+best,450,525);
-  textStyle(BOLD);textSize(12);fill(255,176,94);
+  textStyle(BOLD);textSize(12);fill(255,144,76);
   text('CLICK OR PRESS ENTER TO KICK OFF',
     450,558+sin(frameCount*.1)*2);
   textStyle(NORMAL);
@@ -1313,8 +1462,8 @@ function drawOverScreen(){
   panel(500,400);
   textAlign(CENTER,CENTER);textStyle(BOLD);
   fill(255,168,110);textSize(12);
-  text(redCard?'RED CARD. YOU ARE SENT OFF':
-    'THE NIGHT WON',450,170);
+  text(redCard?'BANISHED FROM THE HAUNTED CUP':
+    'THE MONSTERS CLAIM THE PITCH',450,170);
   fill(255,233,184);textSize(40);
   text('GAME OVER',450,210);
   fill(255,174,88);textSize(46);
@@ -1337,10 +1486,10 @@ function drawOverScreen(){
 function drawPauseScreen(){
   panel(300,150);
   textAlign(CENTER,CENTER);textStyle(BOLD);
-  fill(255,233,184);textSize(30);
-  text('PAUSED',450,312);
-  textStyle(NORMAL);fill(255,196,146);textSize(12);
-  text('Press P or click to resume',450,354);
+  fill(255,222,185);textSize(30);
+  text('TIME IS FROZEN',450,312);
+  textStyle(NORMAL);fill(206,165,222);textSize(12);
+  text('Press P or click to return to the haunted pitch',450,354);
 }
 
 // ---------- HELPERS ----------
