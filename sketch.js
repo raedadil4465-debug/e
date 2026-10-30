@@ -1,21 +1,4 @@
 
-/* ============================================================
-   LAST DEFENDER — HARDCORE EDITION
-   Complete standalone p5.js game
-
-   WASD / ARROWS   Move
-   SHIFT           Sprint
-   SPACE           Lunge tackle
-   P               Pause
-   M               Mute
-   ENTER / CLICK   Start or restart
-
-   Two goals conceded = game over.
-   Two fouls = red card.
-   Attackers predict movement, dodge tackles, exploit
-   space, pass, fake shots and attack faster every wave.
-   ============================================================ */
-
 const W = 900, H = 660;
 const FIELD = {left:60,right:840,top:100,bottom:632};
 const GOAL_W = 210, GOAL_D = 26;
@@ -907,13 +890,13 @@ function addFloater(txt,x,y,col,size=16){
 function buildPitchLayer(){
   const g=createGraphics(W,H);
   g.pixelDensity(min(2,window.devicePixelRatio||1));
-  g.background(7,17,15);
+  g.background(16,12,24);
   g.noStroke();
   randomSeed(11);
 
   const crowd=[
-    [210,70,70],[70,130,220],[230,200,90],
-    [180,180,190],[90,190,130],[200,120,220]
+    [255,156,78],[135,90,220],[255,227,126],
+    [255,204,170],[95,190,140],[200,80,90]
   ];
   for(let i=0;i<2600;i++){
     const x=random(W),y=random(H);
@@ -925,16 +908,21 @@ function buildPitchLayer(){
     g.ellipse(x,y,random(3,5.5));
   }
 
-  g.fill(10,38,32);
+  g.fill(255,210,120,170);
+  g.ellipse(W-150,110,88,88);
+  g.fill(255,230,180,60);
+  g.ellipse(W-150,110,120,120);
+
+  g.fill(42,29,42);
   g.rect(FIELD.left-14,FIELD.top-GOAL_D-12,
     FIELD.right-FIELD.left+28,
     FIELD.bottom-FIELD.top+GOAL_D+26,10);
-  g.fill(18,70,55);
+  g.fill(87,46,42);
   g.rect(FIELD.left-8,FIELD.top-GOAL_D-6,
     FIELD.right-FIELD.left+16,
     FIELD.bottom-FIELD.top+GOAL_D+14,6);
 
-  g.fill(17,94,58);
+  g.fill(66,42,72);
   g.rect(FIELD.left,FIELD.top-GOAL_D,
     FIELD.right-FIELD.left,
     FIELD.bottom-FIELD.top+GOAL_D);
@@ -942,18 +930,19 @@ function buildPitchLayer(){
   const sh=(FIELD.bottom-FIELD.top)/12;
   for(let i=0;i<12;i++){
     if(i%2===0){
-      g.fill(255,255,255,11);
+      g.fill(255,191,118,18);
       g.rect(FIELD.left,FIELD.top+i*sh,
         FIELD.right-FIELD.left,sh);
     }
   }
   for(let i=0;i<1600;i++){
-    g.fill(random()<.5?0:255,random()<.5?0:255,0,8);
+    g.fill(random()<.5?255:180,random()<.5?120:220,
+      random()<.5?90:170,8);
     g.rect(random(FIELD.left,FIELD.right),
       random(FIELD.top,FIELD.bottom),2,random(2,5));
   }
 
-  g.noFill();g.stroke(226,255,232,190);g.strokeWeight(2);
+  g.noFill();g.stroke(255,208,148,200);g.strokeWeight(2);
   g.rect(FIELD.left,FIELD.top,
     FIELD.right-FIELD.left,FIELD.bottom-FIELD.top);
   g.rect(250,FIELD.top,400,150);
@@ -962,20 +951,20 @@ function buildPitchLayer(){
   g.arc(450,FIELD.bottom,150,150,PI,TWO_PI);
   g.arc(FIELD.left,FIELD.top,26,26,0,HALF_PI);
   g.arc(FIELD.right,FIELD.top,26,26,HALF_PI,PI);
-  g.noStroke();g.fill(226,255,232,200);
+  g.noStroke();g.fill(255,190,120,210);
   g.ellipse(450,FIELD.top+108,6);
 
-  g.fill(120,255,190,90);
+  g.fill(255,165,90,90);
   g.textAlign(CENTER,CENTER);
   g.textSize(10);g.textStyle(BOLD);
-  g.text('L A S T   D E F E N D E R  /  H A R D C O R E',
+  g.text('L A S T   D E F E N D E R  /  H A L L O W E E N',
     450,FIELD.bottom+8);
 
   const ctx=g.drawingContext;
   const gr=ctx.createRadialGradient(450,H*.48,H*.28,
     450,H*.48,H*.95);
-  gr.addColorStop(0,'rgba(0,0,0,0)');
-  gr.addColorStop(1,'rgba(0,0,0,0.6)');
+  gr.addColorStop(0,'rgba(20,12,24,0)');
+  gr.addColorStop(1,'rgba(20,12,24,0.72)');
   ctx.fillStyle=gr;ctx.fillRect(0,0,W,H);
   pitchLayer=g;
 }
@@ -1011,21 +1000,21 @@ function drawIndicators(){
 
 function drawGoal(){
   const gx=GOAL_LEFT,gy=FIELD.top-GOAL_D;
-  noStroke();fill(0,0,0,80);
+  noStroke();fill(20,14,18,85);
   rect(gx,gy,GOAL_W,GOAL_D);
-  stroke(255,255,255,60+netPulse*140);
+  stroke(255,175,110,60+netPulse*140);
   strokeWeight(1);
   const wob=netPulse*sin(frameCount*.9)*4;
   for(let x=gx;x<=gx+GOAL_W;x+=10)
     line(x+wob,gy,x+wob*.4,gy+GOAL_D);
   for(let y=gy;y<=gy+GOAL_D;y+=8)
     line(gx,y,gx+GOAL_W,y+wob*.3);
-  noFill();stroke(245,255,249);strokeWeight(5);
+  noFill();stroke(255,200,140);strokeWeight(5);
   beginShape();
   vertex(gx,FIELD.top);vertex(gx,gy);
   vertex(gx+GOAL_W,gy);vertex(gx+GOAL_W,FIELD.top);
   endShape();
-  noStroke();fill(255);
+  noStroke();fill(255,200,120);
   ellipse(gx,FIELD.top,9);
   ellipse(gx+GOAL_W,FIELD.top,9);
 }
@@ -1080,14 +1069,14 @@ function drawDefender(){
   const d=defender;
   const lean=constrain(d.vx*.04,-.2,.2);
   drawPlayer(d.x,d.y,d.face+lean,{
-    shirt:[47,153,255],shorts:[16,25,60],
-    skin:[235,199,157],hair:[35,43,52],
+    shirt:[255,145,78],shorts:[41,30,48],
+    skin:[235,199,157],hair:[57,36,46],
     num:5,run:d.run,
-    glow:recovery>0?[255,160,90]:
-      tackleTimer>0?[130,224,255]:null
+    glow:recovery>0?[255,180,90]:
+      tackleTimer>0?[255,180,120]:null
   });
   if(tackleTimer>0){
-    noFill();stroke(131,224,255,170);strokeWeight(3);
+    noFill();stroke(255,180,120,170);strokeWeight(3);
     ellipse(d.x,d.y,55+(9-tackleTimer)*3);
     noStroke();
   }
@@ -1098,7 +1087,7 @@ function drawAttacker(p){
   const celeb=a.state==='celebrate';
   const bob=celeb?-abs(sin(a.celebrate*.25))*10:0;
   drawPlayer(a.x,a.y+bob,celeb?HALF_PI:a.face,{
-    shirt:c,shorts:[28,30,38],
+    shirt:c,shorts:[32,30,40],
     skin:[250,220,179],hair:[40,35,30],
     num:a.type.num,run:a.run,
     down:a.down>0,arms:celeb?1:0,
@@ -1116,7 +1105,7 @@ function drawAttacker(p){
 
 function drawKeeper(){
   drawPlayer(keeper.x,keeper.y,HALF_PI,{
-    shirt:[134,255,92],shorts:[20,60,30],
+    shirt:[150,88,255],shorts:[34,30,42],
     skin:[235,199,157],hair:[30,30,30],
     num:1,run:frameCount*.05,
     arms:keeper.diving>0?1:.15,scale:.95
@@ -1137,11 +1126,11 @@ function drawShotTrail(){
 
 function drawBall(){
   const b=ball,size=11;
-  noStroke();fill(0,0,0,70);
+  noStroke();fill(26,18,24,70);
   ellipse(b.x+2,b.y+4,size+2,size*.7);
-  fill(250);ellipse(b.x,b.y,size,size);
+  fill(255,180,80);ellipse(b.x,b.y,size,size);
   push();translate(b.x,b.y);rotate(b.spin);
-  fill(32,42,44);
+  fill(64,40,24);
   ellipse(0,0,size*.3);
   for(let i=0;i<5;i++){
     const a=i*TWO_PI/5;
@@ -1174,25 +1163,25 @@ function drawFloaters(){
 
 // ---------- HUD ----------
 function drawHud(){
-  noStroke();fill(5,14,14,240);
+  noStroke();fill(20,12,24,240);
   rect(0,0,W,64);
-  fill(60,255,170,60);rect(0,62,W,2);
+  fill(255,150,72,70);rect(0,62,W,2);
 
   textAlign(LEFT,CENTER);textStyle(BOLD);
-  textSize(17);fill(226,255,235);
+  textSize(17);fill(255,211,150);
   text('LAST DEFENDER',24,20);
-  textStyle(NORMAL);textSize(10);fill(145,190,164);
+  textStyle(NORMAL);textSize(10);fill(218,176,128);
   text(state==='play'?'WAVE '+wave+'  ·  '+curType.name:
-    'HARDCORE EDITION',24,42);
+    'HALLOWEEN NIGHT',24,42);
 
   textAlign(CENTER,CENTER);textStyle(BOLD);
-  textSize(28);fill(255);
+  textSize(28);fill(255,224,140);
   text(score.toLocaleString(),450,25);
-  textStyle(NORMAL);textSize(10);fill(145,190,164);
+  textStyle(NORMAL);textSize(10);fill(218,176,128);
   text('BEST '+best,450,49);
 
   textAlign(RIGHT,CENTER);textSize(10);
-  fill(255,151,129);
+  fill(255,149,101);
   text('CONCEDED',W-24,14);
   for(let i=0;i<MAX_CONCEDED;i++){
     const cx=W-36-(MAX_CONCEDED-1-i)*24,cy=31;
@@ -1202,12 +1191,12 @@ function drawHud(){
       line(cx+6,cy-6,cx-6,cy+6);
       noStroke();
     }else{
-      fill(120,255,180);ellipse(cx,cy,14);
+      fill(255,180,90);ellipse(cx,cy,14);
     }
   }
 
   textAlign(CENTER,CENTER);textSize(10);
-  fill(255,226,120);textStyle(NORMAL);
+  fill(255,218,140);textStyle(NORMAL);
   text('FOULS',W-170,14);
   for(let i=0;i<MAX_FOULS;i++){
     const cx=W-188+i*18;
@@ -1226,32 +1215,32 @@ function drawHud(){
 
   if(state==='play'&&waveState==='live'){
     const p=constrain(waveTimer/WAVE_LIMIT,0,1);
-    fill(p>.7?color(255,110,90):color(110,240,170));
+    fill(p>.7?color(255,110,90):color(255,180,90));
     rect(0,64,W*(1-p),3);
   }
 
-  fill(4,20,15,200);rect(24,H-22,130,8,4);
+  fill(34,19,29,200);rect(24,H-22,130,8,4);
   fill(exhausted?color(255,110,90):
-    stamina>25?color(112,241,161):color(255,178,76));
+    stamina>25?color(255,180,90):color(255,135,70));
   rect(24,H-22,130*stamina/100,8,4);
   textAlign(LEFT,CENTER);textSize(9);
-  fill(230,245,233);
+  fill(255,232,200);
   text(exhausted?'WINDED':'SPRINT',24,H-34);
 
   const cx=W-44,cy=H-40;
-  noFill();stroke(236,255,242,60);
+  noFill();stroke(255,214,156,70);
   strokeWeight(2);ellipse(cx,cy,26);
   const ready=1-constrain(tackleCooldown/65,0,1);
-  stroke(ready>=1?color(130,255,190):
-    color(236,255,242,150));
+  stroke(ready>=1?color(255,190,90):
+    color(255,214,156,170));
   strokeWeight(3);
   arc(cx,cy,26,26,-HALF_PI,
     -HALF_PI+TWO_PI*ready);
-  noStroke();fill(200,230,210,190);
+  noStroke();fill(255,210,150,200);
   textAlign(CENTER,CENTER);textSize(8);
   text('SPACE',cx,cy);
 
-  textSize(9);fill(200,230,210,90);
+  textSize(9);fill(255,219,175,90);
   text('P  PAUSE   ·   M  SOUND '+(muted?'OFF':'ON'),
     450,H-14);
 }
@@ -1272,17 +1261,17 @@ function drawBanner(){
   const t=introTimer;
   const al=constrain(min(t,65-t)*12,0,255);
   const c=curType.col;
-  noStroke();fill(3,15,14,al*.55);
+  noStroke();fill(22,14,24,al*.6);
   rect(0,H/2-70,W,130);
   textAlign(CENTER,CENTER);textStyle(BOLD);
-  fill(115,255,177,al);textSize(13);
+  fill(255,180,90,al);textSize(13);
   text(curType.boss?'BOSS WAVE '+wave:'WAVE '+wave,
     450,H/2-44);
   fill(...c,al);textSize(40);
   text(curType.name,450,H/2-10);
-  textStyle(NORMAL);fill(220,240,228,al);
+  textStyle(NORMAL);fill(255,228,196,al);
   textSize(13);text(curType.tag,450,H/2+28);
-  textSize(10);fill(160,200,175,al);
+  textSize(10);fill(255,182,126,al);
   text(mate?'TWO ATTACKERS. WATCH THE PASS.':
     'GET BETWEEN HIM AND THE GOAL',450,H/2+46);
 }
@@ -1290,31 +1279,31 @@ function drawBanner(){
 function drawStartScreen(){
   panel(560,500);
   textAlign(CENTER,CENTER);textStyle(BOLD);
-  fill(255,110,100);textSize(12);
-  text('HARDCORE SURVIVAL MODE',450,140);
-  fill(255);textSize(43);
+  fill(255,172,95);textSize(12);
+  text('HALLOWEEN SURVIVAL MODE',450,140);
+  fill(255,232,180);textSize(43);
   text('LAST DEFENDER',450,180);
-  textStyle(NORMAL);fill(191,220,203);textSize(14);
-  text('Two goals. Two fouls. No mercy.',450,220);
+  textStyle(NORMAL);fill(255,198,146);textSize(14);
+  text('Moonlit chaos. Two goals. No mercy.',450,220);
 
-  fill(234,247,237);textSize(14);
+  fill(255,228,191);textSize(14);
   const lines=[
     'WASD / ARROWS   move',
     'SHIFT   sprint  (limited stamina)',
     'SPACE   lunge tackle',
     '',
-    'Green ring = exposed ball. Time your tackle.',
-    'Attackers anticipate movement and dodge lunges.',
+    'Orange ring = exposed ball. Time your tackle.',
+    'Attackers read your movement and dodge lunges.',
     'Shots are fast. Wind-ups can be dummies.',
     'Second attackers arrive from wave 2.',
-    'Miss a tackle and you are badly exposed.',
+    'Miss a tackle and the night closes in.',
     'Every fifth wave: THE MAESTRO.'
   ];
   lines.forEach((l,i)=>text(l,450,259+i*25));
 
-  fill(255,226,120);textSize(13);
+  fill(255,214,120);textSize(13);
   text('BEST  '+best,450,525);
-  textStyle(BOLD);textSize(12);fill(132,255,185);
+  textStyle(BOLD);textSize(12);fill(255,176,94);
   text('CLICK OR PRESS ENTER TO KICK OFF',
     450,558+sin(frameCount*.1)*2);
   textStyle(NORMAL);
@@ -1323,24 +1312,24 @@ function drawStartScreen(){
 function drawOverScreen(){
   panel(500,400);
   textAlign(CENTER,CENTER);textStyle(BOLD);
-  fill(255,140,120);textSize(12);
+  fill(255,168,110);textSize(12);
   text(redCard?'RED CARD. YOU ARE SENT OFF':
-    'THEY GOT THROUGH',450,170);
-  fill(255);textSize(40);
+    'THE NIGHT WON',450,170);
+  fill(255,233,184);textSize(40);
   text('GAME OVER',450,210);
-  fill(115,255,177);textSize(46);
+  fill(255,174,88);textSize(46);
   text(score.toLocaleString(),450,268);
-  fill(newBest?color(255,226,120):color(150,190,165));
+  fill(newBest?color(255,226,120):color(255,190,140));
   textSize(14);
   text(newBest?'NEW BEST!':'BEST '+best,450,302);
-  textStyle(NORMAL);fill(234,247,237);textSize(14);
+  textStyle(NORMAL);fill(255,220,190);textSize(14);
   text('Reached wave '+wave,450,342);
   text(tackles+' tackles  ·  '+blocks+' blocks  ·  '+
     fouls+' fouls  ·  best combo '+bestCombo,450,372);
-  fill(191,220,203);textSize(12);
+  fill(255,196,146);textSize(12);
   text('Tip: anticipate the run, not just the ball.',
     450,416);
-  textStyle(BOLD);fill(132,255,185);textSize(12);
+  textStyle(BOLD);fill(255,176,94);textSize(12);
   text('CLICK OR PRESS ENTER TO PLAY AGAIN',450,480);
   textStyle(NORMAL);
 }
@@ -1348,9 +1337,9 @@ function drawOverScreen(){
 function drawPauseScreen(){
   panel(300,150);
   textAlign(CENTER,CENTER);textStyle(BOLD);
-  fill(255);textSize(30);
+  fill(255,233,184);textSize(30);
   text('PAUSED',450,312);
-  textStyle(NORMAL);fill(191,220,203);textSize(12);
+  textStyle(NORMAL);fill(255,196,146);textSize(12);
   text('Press P or click to resume',450,354);
 }
 
